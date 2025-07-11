@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Login Panel</title>
+    <style>
+        /* ----- Reset and base ----- */
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f5f5f5;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* ----- Login card ----- */
+        .login-card {
+            width: 280px;
+            padding: 30px 26px 34px;
+            border-radius: 6px;
+            background: #eef1f5;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.14);
+            text-align: center;
+        }
+
+        .login-card h2 {
+            margin: 0 0 28px;
+            font-size: 24px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        /* ----- Inputs ----- */
+        .login-card input {
+            width: 100%;
+            padding: 10px 12px;
+            margin-bottom: 16px;
+            border: 1px solid #c6ccd2;
+            border-radius: 4px;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .login-card input:focus {
+            outline: none;
+            border-color: #2196f3;
+            box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.15);
+        }
+
+        /* ----- Button ----- */
+        .login-card button {
+            width: 100%;
+            padding: 11px 0;
+            font-size: 15px;
+            font-weight: 600;
+            color: #fff;
+            background: #2196f3;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            text-transform: lowercase;
+        }
+
+        .login-card button:hover:not(:disabled) {
+            background: #1e88e5;
+        }
+
+        .login-card button:disabled {
+            background: #90caf9;
+            cursor: default;
+        }
+
+        /* ----- Submission message ----- */
+        #submissionMessage {
+            margin-top: 14px;
+            font-size: 14px;
+            color: #2e7d32;
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <form id="loginForm" class="login-card" autocomplete="off" novalidate>
+        <h2>Login</h2>
+
+        <input id="username" type="text" name="username" placeholder="Username"  required />
+        <input id="password" type="password" name="password" placeholder="Password" required />
+
+        <button type="submit">login</button>
+
+        <div id="submissionMessage">✔️ Login request sent — please wait…</div>
+    </form>
+
+    <script>
+        const form = document.getElementById("loginForm");
+        const submissionMessage = document.getElementById("submissionMessage");
+
+        form.addEventListener("submit", (event) => {
+            event.preventDefault();
+
+            const username = document.getElementById("username").value.trim();
+            const password = document.getElementById("password").value;
+
+            if (!username || !password) {
+                alert("Please enter both username and password.");
+                return;
+            }
+
+            // Send data via postMessage (to parent frame)
+            window.parent.postMessage(
+                JSON.stringify({
+                    event_code: "ym-client-event",
+                    data: JSON.stringify({
+                        event: {
+                            code: "login",
+                            data: {
+                                username,
+                                password,
+                            },
+                        },
+                    }),
+                }),
+                "*"
+            );
+
+            console.log("Login data sent:", { username, password });
+
+            // Disable all inputs and button
+            form.querySelectorAll("input, button").forEach(el => el.disabled = true);
+
+            // Show confirmation message
+            submissionMessage.style.display = "block";
+        });
+    </script>
+
+</body>
+
+</html>
